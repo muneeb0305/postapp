@@ -20,9 +20,15 @@ const postSchema = new Schema({
         required: true
     },
     comments: [{
-        type: String,
-        required: true
+        _id: {
+            type: mongoose.Schema.Types.ObjectId,
+            default: mongoose.Types.ObjectId
+        },
+        comment: {
+            type: String,
+        }
     }],
+    
 }, { versionKey: false });
 
 module.exports = mongoose.model('posts', postSchema)

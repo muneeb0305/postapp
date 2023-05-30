@@ -4,17 +4,40 @@ import Input from '../Input/Input'
 import Alert from '../Alert/Alert'
 import Modal from '../Modal/Model'
 import UpdateModal from '../Modal/Model2'
+import { useDispatch } from 'react-redux'
+import { addComment, getPost } from '../../features/Post/PostSlice'
 
-export default function AddPost({ data, index }) {
+export default function AddPost({ Postdata, index }) {
+    const dispatch = useDispatch()
     const [Form, setForm] = useState({
+        id: Postdata._id,
         comment: ''
     })
+    console.log(Form)
     const handleChange = (e) => {
         setForm({ ...Form, [e.target.name]: e.target.value })
     }
     const handleSubmit = (e) => {
         e.preventDefault();
-        Alert({ icon: 'success', title: 'Comment Added' })
+        dispatch(addComment({ ...Form }))
+            .unwrap()
+            .then(() => {
+                dispatch(getPost())
+                Alert({ icon: 'success', title: 'Comment Added' })
+                setForm({
+                    id: Postdata._id,
+                    comment: ''
+                })
+            })
+            .catch((err) => {
+                Alert({ icon: 'error', title: err })
+            })
+    }
+    const handleUpdate = (comment) => {
+        setForm({
+            id: Postdata._id,
+            comment: comment
+        })
     }
     return (
         <div className='bg-white border-gray-100 p-5 rounded-lg mt-5' key={index}>
@@ -26,16 +49,16 @@ export default function AddPost({ data, index }) {
                     <h1 className='font-bold text-lg'>Post</h1>
                 </div>
                 <div className='flex gap-2'>
-                    <UpdateModal data={data} />
-                    <Modal ID={data._id} />
+                    <UpdateModal data={Postdata} />
+                    <Modal ID={Postdata._id} type={"Post"} />
                 </div>
             </div>
             <div className='text-justify w-11/12 pt-2 '>
                 <p>
-                    {data.post}
+                    {Postdata.post}
                 </p>
                 <p className='pt-5 text-right'>
-                    <span className='font-bold'>Author: </span>{data.user_Name}
+                    <span className='font-bold'>Author: </span>{Postdata.user_Name}
                 </p>
             </div>
             <div className='border-b-2 py-3' />
@@ -56,14 +79,14 @@ export default function AddPost({ data, index }) {
                 </div>
             </form>
             {
-                data.comments.map((data, index) => (
+                Postdata.comments.map((data, index) => (
                     <div className='flex gap-2 justify-between pt-3' key={index}>
-                        <p><span className='font-bold'>{index + 1}:</span> {data}</p>
+                        <p><span className='font-bold'>{index + 1}:</span> {data.comment}</p>
                         <div className='flex gap-2'>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="text-green-500 w-4 h-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="text-green-500 w-4 h-4" onClick={() => handleUpdate(data.comment)}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                             </svg>
-                            <Modal />
+                            <Modal type={'Comment'} ID={Postdata._id} CommentID={data._id} />
                         </div>
                     </div>
                 ))

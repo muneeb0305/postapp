@@ -1,3 +1,4 @@
+const { mongoose } = require('mongoose');
 const Posts = require('../Models/PostModel')
 const User = require('../Models/UserModel');
 const jwt = require('jsonwebtoken')
@@ -18,7 +19,31 @@ const deletePost = (id) => {
             }
         }).catch((error) => { throw error })
 };
-
+const deleteComment = (req) => {
+    const { PostID, CommentID } = req.body;
+  
+    return Posts.findById(PostID)
+      .then((Post) => {
+        if (!Post) {
+          const error = new Error('Post not found');
+          error.statusCode = 404;
+          throw error;
+        } else {
+          Post.comments = Post.comments.filter((comment) => comment._id.toString() !== CommentID);
+          return Post.save()
+            .then(() => {
+              console.log('Comment Deleted');
+            })
+            .catch((error) => {
+              throw error;
+            });
+        }
+      })
+      .catch((error) => {
+        throw error;
+      });
+  };
+  
 const addPost = (req) => {
     const { post } = req.body;
     const authHeader = req.header('Authorization');
@@ -48,6 +73,29 @@ const addPost = (req) => {
             throw error;
         })
 }
+const addComment = (req) => {
+    const update = req.body;
+    const commentId = new mongoose.Types.ObjectId();
+
+    return Posts.findById(update.id)
+        .then((post) => {
+            if (post) {
+                post.comments.push({ _id: commentId, comment: update.comment });
+                return post.save()
+                    .then(() => console.log("Comment Added"))
+                    .catch((err) => { throw err; });
+            } else {
+                const error = new Error('Post Not Found');
+                error.statusCode = 400;
+                throw error;
+            }
+        })
+        .catch((err) => {
+            throw err;
+        });
+};
+
+
 const updatePost = (req) => {
     const id = req.params.id
     const update = req.body
@@ -55,7 +103,6 @@ const updatePost = (req) => {
     if (bodyValidation === 1) {
         return Posts.findById(id)
             .then((idFound) => {
-                console.log(idFound)
                 if (!idFound) {
                     const error = new Error('Post Not Found');
                     error.statusCode = 404;
@@ -81,4 +128,4 @@ const getPost = () => {
 };
 
 
-module.exports = { deletePost, addPost, updatePost, getPost };
+module.exports = { deletePost, addPost, updatePost, getPost, addComment, deleteComment };

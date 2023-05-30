@@ -41,7 +41,7 @@ export default function User() {
             {/* Add POST Form */}
             <PostForm />
             <div className='grid grid-cols-2 gap-2'>
-                {filteredData.map((data, index) => (<ViewPost data={data} index={index} />))}
+                {filteredData.map((data, index) => (<ViewPost Postdata={data} index={index} />))}
             </div>
         </div>
     )

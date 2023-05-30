@@ -22,6 +22,27 @@ export const addPost = createAsyncThunk(
             });
     }
 );
+//Add Comment
+export const addComment = createAsyncThunk(
+    "addComment",
+    async (data, { getState, rejectWithValue }) => {
+        const state = getState()
+        const token = state.Auth.token
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+        return axios.put(`http://localhost:8080/post/addcomment`, data, config)
+            .then(response => {
+                return response.data
+            })
+            .catch(error => {
+                const err = error.response.data
+                return rejectWithValue(err)
+            });
+    }
+);
 //Update Post
 export const updatePost = createAsyncThunk(
     "updatePost",
@@ -65,7 +86,34 @@ export const deletePost = createAsyncThunk(
             });
     }
 );
-//Delete Post
+//Delete Comment
+export const deleteComment = createAsyncThunk(
+    "deleteComment",
+    async (data, { getState, rejectWithValue }) => {
+        const state = getState()
+        const token = state.Auth.token
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+        console.log(data)
+        return axios.delete(`http://localhost:8080/post/deletecomment`, {
+            ...config,
+            data: data
+        })
+            .then(response => {
+                console.log(response)
+
+                return response.data
+            })
+            .catch(error => {
+                const err = error.response.data
+                return rejectWithValue(err)
+            });
+    }
+);
+//Get Post
 export const getPost = createAsyncThunk(
     "getPost",
     async (args, { getState, rejectWithValue }) => {
@@ -107,7 +155,29 @@ export const OrderSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
         },
+        //Delete Comment
+        [deleteComment.pending]: (state) => {
+            state.loading = true;
+        },
+        [deleteComment.fulfilled]: (state, action) => {
+            state.loading = false;
+        },
+        [deleteComment.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
         //Add Post
+        [addPost.pending]: (state) => {
+            state.loading = true;
+        },
+        [addPost.fulfilled]: (state) => {
+            state.loading = false;
+        },
+        [addPost.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        //Add Comment
         [addPost.pending]: (state) => {
             state.loading = true;
         },
