@@ -51,11 +51,11 @@ export default function RegistrationForm() {
         <section>
             <div className="bg-gray-50 min-h-screen ">
                 <div className="container w-9/12 mx-auto px-5">
-                    <h1 className="text-4xl font-medium py-7 text-center">Customer Registration</h1>
+                    <h1 className="text-4xl font-medium py-7 text-center">User Registration</h1>
                     <div className='bg-white p-5 shadow-lg rounded-lg'>
                         <form onSubmit={handleSubmit}>
                             <div className="grid md:grid-cols-2 md:gap-6">
-                                <Input type="text" name="name" value={Form.name} onChange={handleChange} minLength={8} title={'Customer Name'} />
+                                <Input type="text" name="name" value={Form.name} onChange={handleChange} minLength={8} title={'User Name'} />
                                 <Input type="email" name="email" value={Form.email} onChange={handleChange} title={'Email Address'} />
                             </div>
                             <div className="grid md:grid-cols-2 md:gap-6">

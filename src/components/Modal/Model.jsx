@@ -1,11 +1,19 @@
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux';
+import { deletePost, getPost } from '../../features/Post/PostSlice';
 export default function Modal({ ID }) {
 
   const [isOpen, setIsOpen] = useState(false);
   const openModal = () => setIsOpen(true);
+  const dispatch = useDispatch()
   const closeModal = () => setIsOpen(false);
 
   const handleDelete = (id) => {
+    dispatch(deletePost(id))
+      .unwrap()
+      .then(() => {
+        dispatch(getPost())
+      })
     closeModal()
   }
 

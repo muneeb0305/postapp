@@ -2,22 +2,21 @@ import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Link, useNavigate } from 'react-router-dom'
 import Breadcrumbs from '../Breadcrumb/Breadcrumbs'
-// import { Logout } from '../../features/Auth/AuthSlice';
+import { Logout } from '../../features/Auth/AuthSlice';
 import Alert from '../Alert/Alert'
+import { useDispatch } from 'react-redux'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
 export default function Navbar() {
-  // const toggle = useSelector(state => state.appState.darkMode)
-  // const open = useSelector((state) => state.appState.open)
   const navigate = useNavigate()
-  // const dispatch = useDispatch()
+  const dispatch = useDispatch()
 
   const handleLogout = () => {
     Alert({ icon: 'success', title: 'Logout Successfully' })
-    // dispatch(Logout())
+    dispatch(Logout())
     navigate('/');
   }
   return (

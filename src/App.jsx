@@ -1,9 +1,8 @@
-import Routes from './routes/index';
-
+import Authentication from './Auth/Authentication'
 function App() {
   return (
     <>
-      <Routes/>
+      <Authentication/>
     </>
   );
 }
