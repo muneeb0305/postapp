@@ -1,8 +1,6 @@
 import React from 'react'
-// import { useSelector } from 'react-redux'
 
 export default function Input(props) {
-    // const toggle = useSelector(state=> state.appState.darkMode)
     const title = props.title
     
     return (

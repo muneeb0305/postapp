@@ -4,10 +4,9 @@ const jwt = require('jsonwebtoken')
 const SecretKey = 'MERNdeveloper'
 
 const addUser = (req) => {
-    const { name, email, password } = req.body;
-    console.log(req.body)
+    const { name, email, password, type } = req.body;
     const validation = Object.keys(req.body).length
-    if (validation === 3) {
+    if (validation === 5) {
         return User.findOne({ email: email })
             .then((user) => {
                 if (user) {
@@ -30,12 +29,11 @@ const addUser = (req) => {
                         return bcrypt.hash(password, salt)
                             .then((secPass) => {
                                 const userToken = jwt.sign(name, SecretKey);
-                                const userType = 'User'
                                 const newUser = new User({
                                     name,
                                     email,
                                     password: secPass,
-                                    type: userType,
+                                    type,
                                     token: userToken
                                 });
                                 return newUser.save()
@@ -113,4 +111,4 @@ const checkToken = (req) => {
 }
 
 
-module.exports = {checkToken, addUser, login }
+module.exports = { checkToken, addUser, login }

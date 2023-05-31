@@ -5,15 +5,20 @@ import Button from '../components/Button/Button';
 import Alert from '../components/Alert/Alert';
 import { useDispatch } from 'react-redux';
 import { addUser } from '../features/Users/UserSlice';
+import Select from '../components/Select/Select';
 
 export default function RegistrationForm() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    //User Array for Type dropbox
+    const User = ['Admin', 'User']
+    //Form State
     const [Form, setForm] = useState({
         name: '',
         email: '',
         password: '',
         retype_password: '',
+        type: User[0],   //Initially selected role is admin 
     })
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -37,6 +42,7 @@ export default function RegistrationForm() {
                         email: '',
                         password: '',
                         retype_password: '',
+                        type: '',
                     })
                 })
                 .catch((err) => {
@@ -58,9 +64,10 @@ export default function RegistrationForm() {
                                 <Input type="text" name="name" value={Form.name} onChange={handleChange} minLength={8} title={'User Name'} />
                                 <Input type="email" name="email" value={Form.email} onChange={handleChange} title={'Email Address'} />
                             </div>
-                            <div className="grid md:grid-cols-2 md:gap-6">
+                            <div className="grid md:grid-cols-3 md:gap-6">
                                 <Input type="password" name="password" value={Form.password} onChange={handleChange} title={'Password'} />
                                 <Input type="password" name="retype_password" value={Form.retype_password} onChange={handleChange} title={'Retype Password'} />
+                                <Select label={'Type'} data={User} name='type' value={Form.type} onChange={handleChange} />
                             </div>
                             <Button type="submit" label={'Submit'} />
                         </form>

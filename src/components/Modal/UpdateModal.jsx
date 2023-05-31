@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
-import Form from '../PostForm/Form';
-export default function Modal2({ data }) {
+import Form from '../Form/PostForm';
+
+export default function UpdateModal({ Postdata }) {
+
     const [isOpen, setIsOpen] = useState(false);
     const openModal = () => setIsOpen(true);
     const closeModal = () => setIsOpen(false);
@@ -18,11 +20,11 @@ export default function Modal2({ data }) {
                         <div className="absolute inset-0 bg-black opacity-50"></div>
                         <div className="relative bg-white rounded-lg p-4">
                             <div className='flex justify-end'>
-                                <svg xmlns="http://www.w3.org/2000/svg"  onClick={closeModal} fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" onClick={closeModal} fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 cursor-pointer">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </div>
-                            <Form data={data} type={'Update'} closeModal={closeModal} />
+                            <Form data={Postdata} type={'Update'} closeModal={closeModal} />
                         </div>
                     </div>
                 </div>

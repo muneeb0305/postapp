@@ -25,7 +25,7 @@ export default function Authentication() {
                     dispatch(Logout())
                 }
             })
-            .catch(err => { throw err })
+            .catch(err => { console.log( err) })
         //eslint-disable-next-line
     }, [])
 
@@ -33,7 +33,7 @@ export default function Authentication() {
         <Routes>
             {
                 _Token && _Role === 'Admin' ? <Route path="Admin/*" element={<AppRoutes role={'Admin'} />} /> :
-                    _Token && _Role === 'Customer' ? <Route path="Customer/*" element={<AppRoutes role={'Customer'} />} /> :
+                    _Token && _Role === 'User' ? <Route path="User/*" element={<AppRoutes role={'User'} />} /> :
                         <Route path="/*" element={<LoginLayout />} />
             }
         </Routes >

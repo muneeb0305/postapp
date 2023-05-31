@@ -1,28 +1,45 @@
 import React, { useState } from 'react'
-import { useDispatch } from 'react-redux';
-import { deleteComment, deletePost, getPost } from '../../features/Post/PostSlice';
-export default function Modal({ ID, type, CommentID }) {
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteComment, deletePost, getPost, getPostByID } from '../../features/Post/PostSlice';
 
+export default function DeleteModal({ ID, type, CommentID }) {
+  const dispatch = useDispatch()
   const [isOpen, setIsOpen] = useState(false);
   const openModal = () => setIsOpen(true);
-  const dispatch = useDispatch()
   const closeModal = () => setIsOpen(false);
+  //Redux State
+  const role = useSelector(state => state.Auth.role)
 
   const handleDelete = (id) => {
+    //If type is Post then delete Post else delete comment
     if (type === "Post") {
+      //For deleting post we only need post id
       dispatch(deletePost(id))
         .unwrap()
         .then(() => {
-          dispatch(getPost())
+          //if role is user then update its own post to update the post state and if role is admin then update all post to update the post state
+          if (role === 'User') {
+            dispatch(getPostByID())
+          }
+          else if (role === 'Admin') {
+            dispatch(getPost())
+          }
         })
     }
     else {
-      dispatch(deleteComment({ PostID: ID, CommentID:CommentID }))
+      //For deleting comment we need post id as well as comment id
+      dispatch(deleteComment({ PostID: ID, CommentID: CommentID }))
         .unwrap()
         .then(() => {
-          dispatch(getPost())
+          //if role is user then update its own post to update the post state and if role is admin then update all post to update the post state
+          if (role === 'User') {
+            dispatch(getPostByID())
+          }
+          else if (role === 'Admin') {
+            dispatch(getPost())
+          }
         })
-        .catch(err=>console.log(err))
+        .catch(err => console.log(err))
     }
     closeModal()
   }

@@ -1,24 +1,35 @@
 import React, { useEffect, useState } from 'react'
 import Input from '../Input/Input'
 import Button from '../Button/Button'
-import { addPost, getPost, updatePost } from '../../features/Post/PostSlice'
-import { useDispatch } from 'react-redux'
+import { addPost, getPost, getPostByID, updatePost } from '../../features/Post/PostSlice'
+import { useDispatch, useSelector } from 'react-redux'
 import Alert from '../Alert/Alert'
+
 export default function Form({ type, data, closeModal }) {
-    console.log(data)
-    const [Post, setPost] = useState({ post: '' })
     const dispatch = useDispatch()
+    //Form State
+    const [Post, setPost] = useState({ post: '' })
+    //Redux State
+    const role = useSelector(state => state.Auth.role)
 
     const handleChange = (e) => {
         setPost({ ...Post, [e.target.name]: e.target.value })
     }
+
     const handleSubmit = (e) => {
         e.preventDefault();
+        //If type is update then call the update apis else call add apis
         if (type === 'Update') {
-            dispatch(updatePost([data._id, { ...Post }]))
+            dispatch(updatePost({ PostID: data._id, ...Post }))
                 .unwrap()
                 .then(() => {
-                    dispatch(getPost())
+                    //if update successfully then update the posts 
+                    if (role === 'User') {
+                        dispatch(getPostByID())
+                    }
+                    else if (role === 'Admin') {
+                        dispatch(getPost())
+                    }
                     Alert({ icon: 'success', title: 'Post Updated' })
                     setPost({
                         post: ''
@@ -33,7 +44,13 @@ export default function Form({ type, data, closeModal }) {
             dispatch(addPost({ ...Post }))
                 .unwrap()
                 .then(() => {
-                    dispatch(getPost())
+                    //if Add successfully then update the posts 
+                    if (role === 'User') {
+                        dispatch(getPostByID())
+                    }
+                    else if (role === 'Admin') {
+                        dispatch(getPost())
+                    }
                     Alert({ icon: 'success', title: 'Post Added' })
                     setPost({
                         post: ''
@@ -45,6 +62,7 @@ export default function Form({ type, data, closeModal }) {
         }
     }
     useEffect(() => {
+        //If type is update then set the post to show in input
         if (type === 'Update') {
             setPost({ post: data.post })
         }

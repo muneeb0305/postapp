@@ -47,7 +47,6 @@ export const addComment = createAsyncThunk(
 export const updatePost = createAsyncThunk(
     "updatePost",
     async (data, { getState, rejectWithValue }) => {
-        console.log(data)
         const state = getState()
         const token = state.Auth.token
         const config = {
@@ -55,7 +54,28 @@ export const updatePost = createAsyncThunk(
                 Authorization: `Bearer ${token}`
             }
         };
-        return axios.post(`http://localhost:8080/post/update/${data[0]}`, data[1], config)
+        return axios.post(`http://localhost:8080/post/updatepost`, data, config)
+            .then(response => {
+                return response.data
+            })
+            .catch(error => {
+                const err = error.response.data
+                return rejectWithValue(err)
+            });
+    }
+);
+//Update Comment
+export const updateComment = createAsyncThunk(
+    "updateComment",
+    async (data, { getState, rejectWithValue }) => {
+        const state = getState()
+        const token = state.Auth.token
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+        return axios.post(`http://localhost:8080/post/updatecomment`, data, config)
             .then(response => {
                 return response.data
             })
@@ -97,14 +117,11 @@ export const deleteComment = createAsyncThunk(
                 Authorization: `Bearer ${token}`
             }
         };
-        console.log(data)
         return axios.delete(`http://localhost:8080/post/deletecomment`, {
             ...config,
             data: data
         })
             .then(response => {
-                console.log(response)
-
                 return response.data
             })
             .catch(error => {
@@ -125,6 +142,27 @@ export const getPost = createAsyncThunk(
             }
         };
         return axios.get(`http://localhost:8080/post/viewpost`, config)
+            .then(response => {
+                return response.data
+            })
+            .catch(error => {
+                const err = error.response.data
+                return rejectWithValue(err)
+            });
+    }
+);
+//Get Post By ID
+export const getPostByID = createAsyncThunk(
+    "getPostByID",
+    async (args, { getState, rejectWithValue }) => {
+        const state = getState()
+        const token = state.Auth.token
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+        return axios.get(`http://localhost:8080/post/viewpostbyID`, config)
             .then(response => {
                 return response.data
             })
@@ -199,6 +237,17 @@ export const OrderSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
         },
+        //Update Comment
+        [updateComment.pending]: (state) => {
+            state.loading = true;
+        },
+        [updateComment.fulfilled]: (state) => {
+            state.loading = false;
+        },
+        [updateComment.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
         //Get Post
         [getPost.pending]: (state) => {
             state.loading = true;
@@ -208,6 +257,18 @@ export const OrderSlice = createSlice({
             state.posts = action.payload;
         },
         [getPost.rejected]: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        //getPostByID
+        [getPostByID.pending]: (state) => {
+            state.loading = true;
+        },
+        [getPostByID.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.posts = action.payload;
+        },
+        [getPostByID.rejected]: (state, action) => {
             state.loading = false;
             state.error = action.payload;
         },

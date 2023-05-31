@@ -11,19 +11,18 @@ export default function LoginPage() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     //User Array for Type dropbox
-    const User = ['Admin', 'Customer']
+    const User = ['Admin', 'User']
     //Redux States
     const toggle = useSelector(state => state.appState.darkMode)
 
     const [Form, setForm] = useState({
         email: '',
         password: '',
-        type: User[0]
+        type: User[0]     //Initially selected role is admin 
     })
     const handleChange = (e) => {
         setForm({ ...Form, [e.target.name]: e.target.value })
     }
-    console.log(Form)
     const handleSubmit = (e) => {
         e.preventDefault();
         //check responce of api and navigate to there role
@@ -34,8 +33,8 @@ export default function LoginPage() {
                 Alert({ icon: 'success', title: 'Signed in' })
                 if (role === 'Admin') {
                     navigate('/Admin');
-                } else if (role === 'Customer') {
-                    navigate('/Customer');
+                } else if (role === 'User') {
+                    navigate('/User');
                 }
             })
             .catch((err) => {

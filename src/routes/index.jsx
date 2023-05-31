@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from '../components/Navbar/Navbar';
-import User from '../containers/User';
+import User from '../containers/Home';
 
 const routes = [
   {
