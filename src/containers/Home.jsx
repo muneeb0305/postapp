@@ -3,7 +3,6 @@ import PostForm from '../components/Form/PostForm'
 import ViewPost from '../components/ViewPost/ViewPost'
 import Searchbar from '../components/SearchBar/Searchbar'
 import { useDispatch, useSelector } from 'react-redux'
-import { changeName } from '../features/App/AppSlice'
 import { getPost, getPostByID } from '../features/Post/PostSlice'
 
 export default function User() {    
@@ -13,7 +12,6 @@ export default function User() {
     const role = useSelector(state => state.Auth.role)
     //If role is user then it show there's posts and if role is admin then it shows all posts
     useEffect(() => {
-        dispatch(changeName({ name: "Home" }))
         if (role === 'User') {
             dispatch(getPostByID())
         }

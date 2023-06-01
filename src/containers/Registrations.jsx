@@ -32,7 +32,7 @@ export default function RegistrationForm() {
             dispatch(addUser({ ...Form }))
                 .unwrap()
                 .then(() => {
-                    Alert({ icon: 'success', title: 'Customer Added' })
+                    Alert({ icon: 'success', title: 'User Added' })
                     setTimeout(() => {
                         navigate('/');
                     }, 2000);
@@ -65,8 +65,8 @@ export default function RegistrationForm() {
                                 <Input type="email" name="email" value={Form.email} onChange={handleChange} title={'Email Address'} />
                             </div>
                             <div className="grid md:grid-cols-3 md:gap-6">
-                                <Input type="password" name="password" value={Form.password} onChange={handleChange} title={'Password'} />
-                                <Input type="password" name="retype_password" value={Form.retype_password} onChange={handleChange} title={'Retype Password'} />
+                                <Input type="password" name="password" value={Form.password} onChange={handleChange} title={'Password'} autoComplete='true' />
+                                <Input type="password" name="retype_password" value={Form.retype_password} onChange={handleChange} title={'Retype Password'} autoComplete='true' />
                                 <Select label={'Type'} data={User} name='type' value={Form.type} onChange={handleChange} />
                             </div>
                             <Button type="submit" label={'Submit'} />

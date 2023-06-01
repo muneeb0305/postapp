@@ -1,5 +1,6 @@
 const express = require('express')
-const { checkToken, addUser, login } = require('../Controllers/UserServices')
+const { deleteAccount, checkToken, addUser, login, changeEmail, changePassword } = require('../Controllers/UserServices')
+const auth = require('../Middleware/auth')
 const router = express.Router()
 
 router.put('/add', (req, res, next) => {
@@ -23,6 +24,27 @@ router.post('/checktoken', (req, res, next) => {
     } catch (error) {
         next(error)
     }
+})
+router.post('/changeemail', auth, (req, res, next) => {
+    changeEmail(req)
+        .then(() => {
+            res.status(201).send("Email Changed")
+        })
+        .catch(err => next(err))
+})
+router.post('/changepassword', auth, (req, res, next) => {
+    changePassword(req)
+        .then(() => {
+            res.status(201).send("Password Changed")
+        })
+        .catch((error) => next(error));
+})
+router.delete('/deleteaccount', auth, (req, res, next) => {
+    deleteAccount(req)
+        .then(() => {
+            res.status(201).send("Account Deleted")
+        })
+        .catch((error) => next(error));
 })
 
 

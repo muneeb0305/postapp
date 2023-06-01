@@ -26,9 +26,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/user', User)
-app.use('/post', Post)
-// app.use('/sale', auth, Sale)
-// app.use('/inventory', auth, Inventory)
+app.use('/post', auth, Post)
 
 //If API not Found
 app.use('/', notFound)

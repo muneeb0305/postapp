@@ -109,6 +109,156 @@ const checkToken = (req) => {
         throw error;
     }
 }
+const changeEmail = (req) => {
+    //Get email & new email from req.body
+    const { email, newEmail } = req.body
+    //Get token from req.header
+    const authHeader = req.header('Authorization');
+    const token = authHeader && authHeader.split(' ')[1];
+    let userID;
+    //verify token if verified successfully then decode it and get the userID
+    jwt.verify(token, SecretKey, (err, decoded) => {
+        if (err) {
+            const error = new Error('Token is not valid');
+            error.statusCode = 400;
+            throw error;
+        } else {
+            userID = decoded.ID;
+        }
+    });
+    //Find User by id
+    return User.findById(userID)
+        .then(data => {
+            if (data.email === newEmail) {
+                //if old and new email is same
+                const error = new Error('Old and new email is Same');
+                error.statusCode = 400;
+                throw error;
+            }
+            else if (data.email !== email) {
+                //if user entered incorrect old email
+                const error = new Error('Enter Incorrect Email');
+                error.statusCode = 400;
+                throw error;
+            }
+            else if (data.email === email) {
+                //if email is same as old email then find it and update
+                return User.findOneAndUpdate(
+                    userID,
+                    { $set: { 'email': newEmail } },
+                    { new: true }
+                )
+                    .then(() => {
+                        console.log('Email updated successfully');
+                    })
+                    .catch((err) => {
+                        const error = new Error('Error in Updating');
+                        error.statusCode = 400;
+                        throw error;
+                    });
+            }
+        })
+        .catch((err) => {
+            throw err;
+        })
+}
+const changePassword = (req) => {
+    //Get password & new password from req.body
+    const { password, newPassword } = req.body
+    //Get token from req.header
+    const authHeader = req.header('Authorization');
+    const token = authHeader && authHeader.split(' ')[1];
+    let userID;
+    //verify token if verified successfully then decode it and get the userID
+    jwt.verify(token, SecretKey, (err, decoded) => {
+        if (err) {
+            const error = new Error('Token is not valid');
+            error.statusCode = 400;
+            throw error;
+        } else {
+            userID = decoded.ID;
+        }
+    });
+    //find user bu userID
+    return User.findById(userID)
+        .then((user) => {
+            //Compare old password
+            return bcrypt.compare(password, user.password)
+                .then(data => {
+                    //if password is incorrect
+                    if (!data) {
+                        const error = new Error("Incorrect Password");
+                        error.statusCode = 400;
+                        throw error;
+                    }
+                    //if password length is less than 8
+                    else if (newPassword.length < 8) {
+                        const error = new Error('Password should be atleast 8 digit');
+                        error.statusCode = 403;
+                        throw error;
+                    }
+                    //if old and new password is same
+                    else if (password === newPassword) {
+                        const error = new Error('Old & new Password is same');
+                        error.statusCode = 403;
+                        throw error;
+                    }
+                    //if there is no error in passwords then hash it and update the password
+                    return bcrypt.genSalt(10)
+                        .then((salt) => {
+                            return bcrypt.hash(newPassword, salt)
+                                .then((secPass) => {
+                                    return User.findOneAndUpdate(
+                                        userID,
+                                        { $set: { 'password': secPass } },
+                                        { new: true }
+                                    )
+                                        .then(() => {
+                                            console.log('Password updated successfully');
+                                        })
+                                        .catch((err) => {
+                                            throw err;
+                                        });
+                                }).catch((err) => { throw err });
+                        }).catch((err) => { throw err });
+                })
+                .catch(err => {
+                    throw err
+                })
+        })
+        .catch(err => {
+            throw err;
+        })
+}
+const deleteAccount = (req) => {
+    //Get token from req.header
+    const authHeader = req.header('Authorization');
+    const token = authHeader && authHeader.split(' ')[1];
+    let userID;
+    //verify token if verified successfully then decode it and get the userID
+    jwt.verify(token, SecretKey, (err, decoded) => {
+        if (err) {
+            const error = new Error('Token is not valid');
+            error.statusCode = 400;
+            throw error;
+        } else {
+            userID = decoded.ID;
+        }
+    });
+    //find user bu userID and delete
+    return User.findByIdAndDelete(userID)
+        .then((user) => {
+            //if user not found throw error
+            if (!user) {
+                const error = new Error('User not Found');
+                error.statusCode = 403;
+                throw error;
+            }
+            console.log("User Deleted")
+        })
+        .catch(err => {
+            throw err;
+        })
+}
 
-
-module.exports = { checkToken, addUser, login }
+module.exports = { deleteAccount, checkToken, addUser, login, changeEmail, changePassword }

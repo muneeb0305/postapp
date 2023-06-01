@@ -20,8 +20,8 @@ export default function UpdateModal({ Postdata }) {
                         <div className="absolute inset-0 bg-black opacity-50"></div>
                         <div className="relative bg-white rounded-lg p-4">
                             <div className='flex justify-end'>
-                                <svg xmlns="http://www.w3.org/2000/svg" onClick={closeModal} fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 cursor-pointer">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                <svg xmlns="http://www.w3.org/2000/svg" onClick={closeModal} fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 cursor-pointer">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </div>
                             <Form data={Postdata} type={'Update'} closeModal={closeModal} />

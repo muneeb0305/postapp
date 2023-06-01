@@ -2,36 +2,30 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from '../components/Navbar/Navbar';
 import User from '../containers/Home';
+import Setting from '../containers/Setting';
 
 const routes = [
   {
     path: '/',
     element: <User />,
-    isAdmin: true
+  },
+  {
+    path: '/Setting',
+    element: <Setting />,
   }
 ];
 
 function AppRoutes() {
-  const role = 'Admin'
   return (
     <>
-        <Navbar />
-        <Routes>
-          {
-            routes.map((route, index) => {
-              if (role === 'Admin' && route.isAdmin) {
-                return (
-                  <Route key={index} path={route.path} element={route.element} />
-                );
-              } else if (role !== 'Admin' && !route.isAdmin) {
-                return (
-                  <Route key={index} path={route.path} element={route.element} />
-                );
-              }
-              return null;
-            })
-          }
-        </Routes>
+      <Navbar />
+      <Routes>
+        {
+          routes.map((route, index) => (
+            <Route key={index} path={route.path} element={route.element} />
+          ))
+        }
+      </Routes>
     </>
   );
 }
