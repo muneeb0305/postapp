@@ -21,13 +21,17 @@ const deleteComment = (req) => {
     const { PostID, CommentID } = req.body;
     //search post by id and by using pull remove the comment which id is given 
     return Posts.findByIdAndUpdate(PostID, { $pull: { comments: { _id: CommentID } } }, { new: true })
-        .then(() => {
+        .then((post) => {
+            //if post not found
+            if (!post) {
+                const error = new Error('Post Not Found');
+                error.statusCode = 400;
+                throw error;
+            }
             console.log('Comment Deleted');
         })
         .catch((err) => {
-            const error = new Error('Comment Not Found');
-            error.statusCode = 400;
-            throw error;
+            throw err;
         })
 };
 //Add Post
@@ -51,6 +55,11 @@ const addPost = (req) => {
     //Find user by userID
     return User.findById(userID)
         .then((user) => {
+            if (!user) {
+                const error = new Error('User Not Found');
+                error.statusCode = 400;
+                throw error;
+            }
             //Create Post
             const newPost = new Posts({
                 user_id: userID,
@@ -62,11 +71,8 @@ const addPost = (req) => {
                 .then(() => console.log("Post Added"))
                 .catch((error) => { throw error })
         })
-        //If user not found
-        .catch(() => {
-            const error = new Error('User Not Found');
-            error.statusCode = 400;
-            throw error;
+        .catch((err) => {
+            throw err;
         })
 }
 // Add Comment
@@ -78,21 +84,23 @@ const addComment = (req) => {
     //Search post by postID
     return Posts.findById(PostID)
         .then((post) => {
+            //If Post not Found
+            if (!post) {
+                const error = new Error('Post Not Found');
+                error.statusCode = 400;
+                throw error;
+            }
             //Push the comment in post
             post.comments.push({ _id: commentId, comment: comment });
             return post.save()
                 .then(() => console.log("Comment Added"))
                 .catch((err) => { throw err; });
         })
-        //If Post not Found
         .catch((err) => {
-            const error = new Error('Post Not Found');
-            error.statusCode = 400;
-            throw error;
+            throw err;
         });
 };
-
-
+//Update Post
 const updatePost = (req) => {
     //Get PostID and post from req.body
     const { PostID, post } = req.body
@@ -104,13 +112,17 @@ const updatePost = (req) => {
             { $set: { 'post': post } },
             { new: true }
         )
-            .then(() => {
+            .then((post) => {
+                //if post not found
+                if (!post) {
+                    const error = new Error('Post Not Found');
+                    error.statusCode = 400;
+                    throw error;
+                }
                 console.log('Post updated successfully');
             })
             .catch((err) => {
-                const error = new Error('Post Not Found');
-                error.statusCode = 400;
-                throw error;
+                throw err
             });
     }
 }
@@ -123,41 +135,52 @@ const updateComment = (req) => {
         { $set: { 'comments.$.comment': comment } },
         { new: true }
     )
-        .then(() => {
+        .then((post) => {
+            //If post not found
+            if (!post) {
+                const error = new Error('Post Not Found');
+                error.statusCode = 400;
+                throw error;
+            }
             console.log('Comment updated successfully');
         })
         .catch((err) => {
-            const error = new Error('Post Not Found');
-            error.statusCode = 400;
-            throw error;
+            throw err;
         });
 }
-
-const getPost = () => {
-    return Posts.find().select(['_id', 'user_Name', 'post', 'comments'])
-        .then((items) => {
-            return items
-        })
-        .catch((err) => { throw err })
-};
-const getPostByID = (req) => {
+const getPost = (req) => {
+    //get token
     const authHeader = req.header('Authorization');
     const token = authHeader && authHeader.split(' ')[1];
+    console.log(authHeader)
     let userID;
+    let Role;
+    //decode userid and role
     jwt.verify(token, SecretKey, (err, decoded) => {
         if (err) {
             throw err
         } else {
             userID = decoded.ID;
+            Role = decoded.Role;
         }
     });
-    return Posts.find({ user_id: userID }).select(['_id', 'user_Name', 'post', 'comments'])
-        .then((items) => {
-            console.log(items)
-            return items
-        })
-        .catch((err) => { throw err })
+    //if role is user then show its own post only
+    if (Role === 'User') {
+        return Posts.find({ user_id: userID }).select(['_id', 'user_Name', 'post', 'comments']).sort('-date')
+            .then((items) => {
+                return items
+            })
+            .catch((err) => { throw err })
+    }
+    //if role is admin than show all posts
+    else if (Role === 'Admin') {
+        return Posts.find().select(['_id', 'user_Name', 'post', 'comments']).sort('-date')
+            .then((items) => {
+                return items
+            })
+            .catch((err) => { throw err })
+    }
 };
 
 
-module.exports = { deletePost, addPost, updatePost, getPost, addComment, deleteComment, getPostByID, updateComment };
+module.exports = { deletePost, addPost, updatePost, getPost, addComment, deleteComment, updateComment };

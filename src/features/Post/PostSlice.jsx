@@ -151,28 +151,6 @@ export const getPost = createAsyncThunk(
             });
     }
 );
-//Get Post By ID
-export const getPostByID = createAsyncThunk(
-    "getPostByID",
-    async (args, { getState, rejectWithValue }) => {
-        const state = getState()
-        const token = state.Auth.token
-        const config = {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        };
-        return axios.get(`http://localhost:8080/post/viewpostbyID`, config)
-            .then(response => {
-                return response.data
-            })
-            .catch(error => {
-                const err = error.response.data
-                return rejectWithValue(err)
-            });
-    }
-);
-
 
 export const OrderSlice = createSlice({
     name: 'Posts',
@@ -257,18 +235,6 @@ export const OrderSlice = createSlice({
             state.posts = action.payload;
         },
         [getPost.rejected]: (state, action) => {
-            state.loading = false;
-            state.error = action.payload;
-        },
-        //getPostByID
-        [getPostByID.pending]: (state) => {
-            state.loading = true;
-        },
-        [getPostByID.fulfilled]: (state, action) => {
-            state.loading = false;
-            state.posts = action.payload;
-        },
-        [getPostByID.rejected]: (state, action) => {
             state.loading = false;
             state.error = action.payload;
         },

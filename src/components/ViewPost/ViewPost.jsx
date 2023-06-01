@@ -14,6 +14,35 @@ export default function AddPost({ Postdata, index }) {
         });
     };
 
+    //Pagination
+    const sortData = Postdata.comments
+    const [currentPage, setCurrentPage] = useState(1);
+    const [recordsPerPage] = useState(3);
+    const indexOfLastRecord = currentPage * recordsPerPage;
+    const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+    const currentRecords = sortData.slice(indexOfFirstRecord, indexOfLastRecord)
+    const changePage = (pageNumber) => setCurrentPage(pageNumber);
+    const totalPages = Math.ceil(sortData.length / recordsPerPage);
+    const pageButtons = [];
+    for (let i = 1; i <= totalPages; i++) {
+        pageButtons.push(
+            <li key={i} aria-current={i === currentPage ? "page" : undefined}>
+                <button
+                    className={`px-3 py-1 leading-tight ${i === currentPage
+                        ? "text-white  bg-blue-500 "
+                        : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+                        }`}
+                    onClick={() => changePage(i)}
+                >
+                    {i}
+                </button>
+            </li>
+        );
+    }
+    const handleDelete = () => {
+        if (currentPage > 1 && currentRecords.length < 2)
+            setCurrentPage(currentPage - 1);
+    };
     return (
         <div className='bg-white border-gray-100 p-5 rounded-lg mt-5' key={index}>
             <div className='flex gap-2 justify-between'>
@@ -51,26 +80,48 @@ export default function AddPost({ Postdata, index }) {
             <CommentForm Postdata={Postdata} />
             {/* Show all Comments */}
             {
-                Postdata.comments.map((data, index) => (
+                currentRecords.map((data, index) => (
                     <>
-                        <div className='flex gap-2 justify-between pt-3' key={index}>
-                            <p><span className='font-bold'>{index + 1}:</span> {data.comment}</p>
+                        <div className='flex gap-2 justify-between pt-3' key={index} >
+                            <p><span className='font-bold'>{index + (currentPage - 1) * recordsPerPage + 1} :</span> {data.comment}</p>
                             <div className='flex gap-2'>
                                 {/* Update Comment Icon */}
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="text-green-500 w-4 h-4 cursor-pointer" onClick={() => toggleComment(index)}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                                 </svg>
                                 {/* Delete Comment */}
-                                <DeleteModal type={'Comment'} ID={Postdata._id} CommentID={data._id} />
+                                <DeleteModal type={'Comment'} ID={Postdata._id} CommentID={data._id} pagePagination={handleDelete} />
                             </div>
                         </div>
                         {/* Update Comment */}
                         <div className={`${openComments[index] ? 'block' : `hidden`}`}>
-                            <CommentForm Postdata={Postdata} type='Update' index={index} toggleComment={toggleComment} />
+                            <CommentForm Postdata={Postdata} type='Update' index={index + (currentPage - 1) * recordsPerPage} toggleComment={toggleComment} />
                         </div>
                     </>
                 ))
+
             }
+            <div className="mt-8">
+                {sortData.length > recordsPerPage && (
+                    <nav aria-label="Page navigation example" className='md:flex md:justify-center'>
+                        <ul className="inline-flex items-center -space-x-px">
+                            <li>
+                                <button className="block px-3 py-1 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 " onClick={() => { if (currentPage > 1) { changePage(currentPage - 1) } }}>
+                                    <span className="sr-only">Previous</span>
+                                    <svg aria-hidden="true" className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd"></path></svg>
+                                </button>
+                            </li>
+                            {pageButtons}
+                            <li>
+                                <button className="block px-3 py-1 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 " onClick={() => { if (currentPage + 1 <= totalPages) { changePage(currentPage + 1) } }}>
+                                    <span className="sr-only">Next</span>
+                                    <svg aria-hidden="true" className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"></path></svg>
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
+                )}
+            </div>
         </div>
     )
 }

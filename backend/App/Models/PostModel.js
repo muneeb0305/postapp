@@ -24,6 +24,10 @@ const postSchema = new Schema({
             type: mongoose.Schema.Types.ObjectId,
             default: mongoose.Types.ObjectId
         },
+        date: {
+            type: Date,
+            default: Date.now
+        },
         comment: {
             type: String,
         }

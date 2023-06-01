@@ -3,32 +3,42 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const SecretKey = 'MERNdeveloper'
 
+//Add User
 const addUser = (req) => {
+    //Get name, email, password, type from req.body
     const { name, email, password, type } = req.body;
+    //check body validations
     const validation = Object.keys(req.body).length
     if (validation === 5) {
+        //find user with the given email
         return User.findOne({ email: email })
             .then((user) => {
+                //if user found with same email then show error
                 if (user) {
                     const error = new Error('User with this email already exists');
                     error.statusCode = 403;
                     throw error;
                 }
+                //check password length
                 else if (password.length < 8) {
                     const error = new Error('Password should be atleast 8 digit');
                     error.statusCode = 403;
                     throw error;
                 }
+                //check name length
                 else if (name.length < 8) {
                     const error = new Error('Name should be atleast 8 digit');
                     error.statusCode = 403;
                     throw error;
                 }
+                //hash password
                 return bcrypt.genSalt(10)
                     .then((salt) => {
                         return bcrypt.hash(password, salt)
                             .then((secPass) => {
+                                //token create
                                 const userToken = jwt.sign(name, SecretKey);
+                                //create user
                                 const newUser = new User({
                                     name,
                                     email,
@@ -36,6 +46,7 @@ const addUser = (req) => {
                                     type,
                                     token: userToken
                                 });
+                                //save user
                                 return newUser.save()
                                     .then(() => {
                                         console.log("User Created");
@@ -50,27 +61,35 @@ const addUser = (req) => {
         throw error;
     }
 }
+//Login
 const login = (req) => {
+    //get email, password, type from req.body
     const { email, password, type } = req.body
     const validation = Object.keys(req.body).length
+    //check body validations
     if (validation === 3) {
+        //find user with given email and type
         return User.findOne({ email: email, type: type })
             .then((user) => {
+                //if user not found
                 if (!user) {
                     const error = new Error("Please try to login with correct Credentials");
                     error.statusCode = 400;
                     throw error;
                 }
+                //if user have not token
                 else if (!user.token) {
                     const error = new Error("Not Authorized User");
                     error.statusCode = 400;
                     throw error;
                 }
                 else {
+                    //varify password
                     try {
                         jwt.verify(user.token, SecretKey)
                         return bcrypt.compare(password, user.password)
                             .then((varify) => {
+                                //if varification failed
                                 if (!varify) {
                                     const error = new Error("Please try to login with correct Credentials");
                                     error.statusCode = 400;
@@ -96,19 +115,22 @@ const login = (req) => {
         throw error;
     }
 }
+//Check Token
 const checkToken = (req) => {
+    //get token from req.body
     const { token } = req.body
+    //verify token
     try {
         jwt.verify(token, SecretKey)
         return { Authorization: `Bearer ${token}` }
 
     } catch (err) {
-        console.log(err)
         const error = new Error("Not Authorized User");
         error.statusCode = 400;
         throw error;
     }
 }
+//Change Email
 const changeEmail = (req) => {
     //Get email & new email from req.body
     const { email, newEmail } = req.body
@@ -162,6 +184,7 @@ const changeEmail = (req) => {
             throw err;
         })
 }
+//Change Password
 const changePassword = (req) => {
     //Get password & new password from req.body
     const { password, newPassword } = req.body
@@ -230,6 +253,7 @@ const changePassword = (req) => {
             throw err;
         })
 }
+//Delete Account
 const deleteAccount = (req) => {
     //Get token from req.header
     const authHeader = req.header('Authorization');

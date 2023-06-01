@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import Input from '../Input/Input'
 import Button from '../Button/Button'
-import { addPost, getPost, getPostByID, updatePost } from '../../features/Post/PostSlice'
-import { useDispatch, useSelector } from 'react-redux'
+import { addPost, getPost, updatePost } from '../../features/Post/PostSlice'
+import { useDispatch } from 'react-redux'
 import Alert from '../Alert/Alert'
 
 export default function Form({ type, data, closeModal }) {
     const dispatch = useDispatch()
     //Form State
     const [Post, setPost] = useState({ post: '' })
-    //Redux State
-    const role = useSelector(state => state.Auth.role)
-
+    
     const handleChange = (e) => {
         setPost({ ...Post, [e.target.name]: e.target.value })
     }
@@ -24,12 +22,7 @@ export default function Form({ type, data, closeModal }) {
                 .unwrap()
                 .then(() => {
                     //if update successfully then update the posts 
-                    if (role === 'User') {
-                        dispatch(getPostByID())
-                    }
-                    else if (role === 'Admin') {
-                        dispatch(getPost())
-                    }
+                    dispatch(getPost())
                     Alert({ icon: 'success', title: 'Post Updated' })
                     setPost({
                         post: ''
@@ -45,12 +38,7 @@ export default function Form({ type, data, closeModal }) {
                 .unwrap()
                 .then(() => {
                     //if Add successfully then update the posts 
-                    if (role === 'User') {
-                        dispatch(getPostByID())
-                    }
-                    else if (role === 'Admin') {
-                        dispatch(getPost())
-                    }
+                    dispatch(getPost())
                     Alert({ icon: 'success', title: 'Post Added' })
                     setPost({
                         post: ''
@@ -71,11 +59,11 @@ export default function Form({ type, data, closeModal }) {
     return (
         <div className='bg-white border-gray-100 p-5 rounded-lg '>
             <form onSubmit={handleSubmit}>
-                <div className='grid grid-cols-8 gap-5'>
-                    <div className='col-span-7'>
+                <div className='grid grid-cols-8 sm:gap-5'>
+                    <div className='col-span-8 sm:col-span-6 2xl:col-span-7'>
                         <Input type="text" name='post' value={Post.post} onChange={handleChange} title={'Post'} />
                     </div>
-                    <div>
+                    <div className='col-span-8 sm:col-span-2  2xl:col-span-1'>
                         <Button type="submit" label={` ${data ? 'Update' : 'Add'} Post`} />
                     </div>
                 </div>

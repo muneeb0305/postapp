@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { deletePost, addPost, updatePost, getPost,addComment, deleteComment,getPostByID, updateComment } = require('../Controllers/PostService')
+const { deletePost, addPost, updatePost, getPost,addComment, deleteComment, updateComment } = require('../Controllers/PostService')
 
 /* Delete Post */
 router.delete('/delete/:id', (req, res, next) => {
@@ -27,7 +27,7 @@ router.post('/updatepost', (req, res, next) => {
 router.post('/updatecomment', (req, res, next) => {
     updateComment(req)
         .then(() => {
-            res.status(200).send('Post Updated');
+            res.status(200).send('Comment Updated');
         }).catch((error) => next(error))
 })
 /* Add Post */
@@ -48,15 +48,7 @@ router.put('/addcomment', (req, res, next) => {
 })
 /* Get Post */
 router.get('/viewpost', (req, res, next) => {
-    getPost()
-        .then((data) => {
-            res.status(201).send(data)
-        })
-        .catch((error) => next(error));
-})
-/* Get Post By ID */
-router.get('/viewpostbyID', (req, res, next) => {
-    getPostByID(req)
+    getPost(req)
         .then((data) => {
             res.status(201).send(data)
         })

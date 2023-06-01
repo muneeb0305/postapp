@@ -1,18 +1,16 @@
 import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { deleteComment, deletePost, getPost, getPostByID } from '../../features/Post/PostSlice';
+import { useDispatch } from 'react-redux';
+import { deleteComment, deletePost, getPost } from '../../features/Post/PostSlice';
 import Button from '../Button/Button';
 import { deleteAccount } from '../../features/Users/UserSlice';
 import Alert from '../Alert/Alert';
 import { Logout } from '../../features/Auth/AuthSlice';
 
-export default function DeleteModal({ ID, type, CommentID }) {
+export default function DeleteModal({ ID, type, CommentID, pagePagination }) {
   const dispatch = useDispatch()
   const [isOpen, setIsOpen] = useState(false);
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
-  //Redux State
-  const role = useSelector(state => state.Auth.role)
 
   const handleDelete = (id) => {
     //If type is Post then delete Post else delete comment
@@ -22,12 +20,7 @@ export default function DeleteModal({ ID, type, CommentID }) {
         .unwrap()
         .then(() => {
           //if role is user then update its own post to update the post state and if role is admin then update all post to update the post state
-          if (role === 'User') {
-            dispatch(getPostByID())
-          }
-          else if (role === 'Admin') {
-            dispatch(getPost())
-          }
+          dispatch(getPost())
         })
     }
     //if type is Account then Delete its Account
@@ -48,12 +41,8 @@ export default function DeleteModal({ ID, type, CommentID }) {
         .unwrap()
         .then(() => {
           //if role is user then update its own post to update the post state and if role is admin then update all post to update the post state
-          if (role === 'User') {
-            dispatch(getPostByID())
-          }
-          else if (role === 'Admin') {
-            dispatch(getPost())
-          }
+          dispatch(getPost())
+          pagePagination()
         })
         .catch(err => console.log(err))
     }
