@@ -166,11 +166,12 @@ const changeEmail = (req) => {
             else if (data.email === email) {
                 //if email is same as old email then find it and update
                 return User.findOneAndUpdate(
-                    userID,
+                    {_id: userID},
                     { $set: { 'email': newEmail } },
                     { new: true }
                 )
                     .then(() => {
+                        console.log(userID)
                         console.log('Email updated successfully');
                     })
                     .catch((err) => {
@@ -232,7 +233,7 @@ const changePassword = (req) => {
                             return bcrypt.hash(newPassword, salt)
                                 .then((secPass) => {
                                     return User.findOneAndUpdate(
-                                        userID,
+                                        {_id: userID},
                                         { $set: { 'password': secPass } },
                                         { new: true }
                                     )
